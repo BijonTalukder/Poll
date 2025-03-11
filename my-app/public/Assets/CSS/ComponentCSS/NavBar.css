@@ -1,0 +1,17 @@
+.NavBar .nav-logo {
+  height: 50px;
+  width: 150px;
+}
+.NavBar .searchIcon{
+  height: 26px;
+  padding: 4px;
+  border-radius: 0px 4px 4px 0px;
+  background-color: blue;
+}
+.NavBar .search-bar{
+  width: 400px;
+}
+.NavBar{
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+}
+

@@ -1,0 +1,21 @@
+$backgroundColour: #c6538c;
+.BannerCard-Container {
+  display: flex;
+  gap: 5px;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 400px;
+  padding: 3px;
+  height: 200px;
+  background-color: $backgroundColour;
+  border-radius: 5px;
+  .logo {
+    max-width: 100px;
+    max-height: 100px;
+    overflow: hidden;
+    border-radius: 50%;
+    img {
+      object-fit: cover;
+    }
+  }
+}
