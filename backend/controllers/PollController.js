@@ -40,4 +40,34 @@ const voteOnPoll = async (req, res) => {
   }
 };
 
-module.exports = { createPoll, getPollById, voteOnPoll };
+const reactToPoll = async (req, res) => {
+  try {
+    const { reactionType } = req.body;
+    const reactions = await pollService.reactToPoll(req.params.id, reactionType);
+
+    res.json({
+      message: 'Reaction added successfully',
+      reactions
+    });
+  } catch (err) {
+    console.error('Error adding reaction:', err);
+    res.status(500).json({ message: 'Failed to add reaction' });
+  }
+};
+
+// Add comment to a poll
+const addCommentToPoll = async (req, res) => {
+  try {
+    const { text } = req.body;
+    const comments = await pollService.addCommentToPoll(req.params.id, text);
+
+    res.json({
+      message: 'Comment added successfully',
+      comments
+    });
+  } catch (err) {
+    console.error('Error adding comment:', err);
+    res.status(500).json({ message: 'Failed to add comment' });
+  }
+};
+module.exports = { createPoll, getPollById, voteOnPoll,reactToPoll,addCommentToPoll };

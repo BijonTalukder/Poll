@@ -61,9 +61,9 @@ const voteOnPoll = async (pollId, optionIndex) => {
     throw new Error(err.message);
   }
 };
-const reactToPoll = async (shareId, reactionType) => {
+const reactToPoll = async (id, reactionType) => {
     try {
-      const poll = await Poll.findOne({ shareId });
+      const poll = await Poll.findOne({ _id:id});
   
       if (!poll) {
         throw new Error('Poll not found');
@@ -89,9 +89,9 @@ const reactToPoll = async (shareId, reactionType) => {
   };
   
   // Add comment to a poll
-  const addCommentToPoll = async (shareId, text) => {
+  const addCommentToPoll = async (id, text) => {
     try {
-      const poll = await Poll.findOne({ shareId });
+      const poll = await Poll.findOne({ _id:id });
   
       if (!poll) {
         throw new Error('Poll not found');

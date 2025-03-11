@@ -38,9 +38,10 @@ const pollSchema = new mongoose.Schema({
   }]
 }, { timestamps: true });
 
-const Poll = mongoose.model('Poll', pollSchema);
 pollSchema.methods.hasExpired = function() {
     return new Date() > this.expiresAt;
   };
+  const Poll = mongoose.model('Poll', pollSchema);
+
 
 module.exports = Poll;

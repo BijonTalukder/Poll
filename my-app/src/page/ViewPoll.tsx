@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api'; // Change to your backend URL
+const API_URL = 'http://localhost:5000/api/polls'; // Change to your backend URL
 
 function ViewPoll() {
   const { id } = useParams();
@@ -21,9 +21,9 @@ function ViewPoll() {
   useEffect(() => {
     const fetchPoll = async () => {
       try {
-        const response = await axios.get(`${API_URL}/polls/${id}`);
+        const response = await axios.get(`${API_URL}/${id}`);
         setPoll(response.data);
-        
+        setComments(response.data.comments)
         // Check localStorage to see if user has already voted
         const votedPolls = JSON.parse(localStorage.getItem('votedPolls') || '{}');
         if (votedPolls[id]) {
@@ -55,14 +55,28 @@ function ViewPoll() {
   
   const updateTimeLeft = () => {
     if (!poll?.expiresAt) return;
+  console.log(poll?.expiresAt);
+  
+    let expiration;
+
+    console.log(expiration);
     
-    const expiration = new Date(poll.expiresAt.seconds * 1000);
+    if (typeof poll.expiresAt === "string") {
+      console.log("block");
+      
+      expiration = new Date(poll.expiresAt);
+    } else if (poll.expiresAt.seconds) {
+      expiration = new Date(poll.expiresAt.seconds * 1000); 
+    } else {
+      return;
+    }
+  
     const now = new Date();
     const diff = expiration - now;
-    
+  
     if (diff <= 0) {
       setTimeLeft('Expired');
-      navigate('/');
+      navigate('/'); // Redirect if expired
     } else {
       const hours = Math.floor(diff / (1000 * 60 * 60));
       const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
@@ -74,8 +88,8 @@ function ViewPoll() {
   
   const fetchComments = async () => {
     try {
-      const response = await axios.get(`${API_URL}/polls/${id}/comments`);
-      setComments(response.data);
+      const response = await axios.get(`${API_URL}/${id}`);
+      setComments(response.data.comments);
     } catch (error) {
       console.error('Error fetching comments:', error);
     }
@@ -85,7 +99,7 @@ function ViewPoll() {
     if (selectedOption === null) return;
     
     try {
-      const response = await axios.post(`${API_URL}/polls/${id}/vote`, { optionIndex: selectedOption });
+      const response = await axios.post(`${API_URL}/${id}/vote`, { optionIndex: selectedOption });
       setPoll(response.data);
       setHasVoted(true);
       
@@ -101,7 +115,7 @@ function ViewPoll() {
   
   const addReaction = async (reactionType) => {
     try {
-      const response = await axios.post(`${API_URL}/polls/${id}/reaction`, { reactionType });
+      const response = await axios.post(`${API_URL}/${id}/reaction`, { reactionType });
       setPoll(response.data);
     } catch (error) {
       console.error('Error adding reaction:', error);
@@ -113,7 +127,7 @@ function ViewPoll() {
     if (!newComment.trim()) return;
     
     try {
-      await axios.post(`${API_URL}/polls/${id}/comments`, { text: newComment.trim() });
+      await axios.post(`${API_URL}/${id}/comments`, { text: newComment.trim() });
       setNewComment('');
       fetchComments();
     } catch (error) {
@@ -189,13 +203,13 @@ function ViewPoll() {
                 onClick={() => addReaction('trending')}
                 className="flex items-center px-3 py-1 rounded-full bg-orange-100 dark:bg-orange-900 text-orange-600 dark:text-orange-300 text-sm hover:bg-orange-200 dark:hover:bg-orange-800 transition"
               >
-                🔥 {poll.trending || 0}
+                🔥 {poll?.reactions?.trending || 0}
               </button>
               <button
                 onClick={() => addReaction('like')}
                 className="flex items-center px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 text-sm hover:bg-blue-200 dark:hover:bg-blue-800 transition"
               >
-                👍 {poll.likes || 0}
+                👍 {poll?.reactions?.likes || 0}
               </button>
             </div>
           </div>
@@ -208,7 +222,7 @@ function ViewPoll() {
             </span>
           </div>
           
-          {poll.options.map((option, index) => (
+          {poll?.options?.map((option, index) => (
             <div key={index} className="mb-4">
               <div className="flex items-center mb-1">
                 <input
